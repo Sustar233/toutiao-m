@@ -1,8 +1,6 @@
 <template>
   <div id="app">
     <router-view/>
-    <h1>qwq</h1>
-    <i class="toutiao icon-yuedu"></i>
 
   </div>
 </template>
