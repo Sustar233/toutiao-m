@@ -6,6 +6,8 @@
     <meta name="viewport" content="width=device-width,initial-scale=1.0">
     <link rel="icon" href="<%= BASE_URL %>favicon.ico">
     <title><%= htmlWebpackPlugin.options.title %></title>
+    <!-- 页面中所有请求不带referrer（申请获取防盗链图片 -->
+    <meta name="referrer" content="no-referrer"/>
   </head>
   <body>
     <noscript>
