@@ -35,19 +35,32 @@
           />
           <div slot="title" class="user-name">{{ article.aut_name }}</div>
           <div slot="label" class="publish-date">{{ article.pubdate | relativeTime }}</div>
+          <!-- 模板中的$event是事件参数 -->
+          <follow-user
+            class="follow-btn"
+            :is-followed="article.is_followed"
+            :user-id="article.aut_id"
+            @update-is_followed="article.is_followed = $event"
+          />
+          <!-- <van-button
+            v-if="article.is_followed"
+            class="follow-btn"
+            round
+            size="small"
+            :loading="followLoading"
+            @click="onFollow"
+          >已关注</van-button>
           <van-button
+            v-else
             class="follow-btn"
             type="info"
             color="#3296fa"
             round
             size="small"
             icon="plus"
-          >关注</van-button>
-          <!-- <van-button
-            class="follow-btn"
-            round
-            size="small"
-          >已关注</van-button> -->
+            :loading="followLoading"
+            @click="onFollow"
+          >关注</van-button> -->
         </van-cell>
         <!-- /用户信息 -->
 
@@ -57,6 +70,32 @@
           v-html="article.content"
           ref="article-content">这是文章内容</div>
         <van-divider>正文结束</van-divider>
+        <!-- 底部区域 -->
+        <div class="article-bottom">
+          <van-button
+            class="comment-btn"
+            type="default"
+            round
+            size="small"
+          >写评论</van-button>
+          <van-icon
+            name="comment-o"
+            badge="123"
+            color="#777"
+          />
+          <collect-article
+            class="van-icon"
+            v-model="article.is_collected"
+            :article-id="article.art_id"
+          />
+          <like-article 
+            class="van-icon"
+            v-model="article.attitude"
+            :article-id="article.art_id"
+          />
+          <van-icon name="share" color="#777"></van-icon>
+        </div>
+        <!-- /底部区域 -->
       </div>
       <!-- /加载完成-文章详情 -->
 
@@ -76,40 +115,24 @@
       <!-- /加载失败：其它未知错误（例如网络原因或服务端异常） -->
     </div>
 
-    <!-- 底部区域 -->
-    <div class="article-bottom">
-      <van-button
-        class="comment-btn"
-        type="default"
-        round
-        size="small"
-      >写评论</van-button>
-      <van-icon
-        name="comment-o"
-        badge="123"
-        color="#777"
-      />
-      <van-icon
-        color="#777"
-        name="star-o"
-      />
-      <van-icon
-        color="#777"
-        name="good-job-o"
-      />
-      <van-icon name="share" color="#777777"></van-icon>
-    </div>
-    <!-- /底部区域 -->
+
   </div>
 </template>
 
 <script>
 import { getArticleById } from '@/api/article'
-import { ImagePreview } from 'vant';
+import { ImagePreview } from 'vant'
+import FollowUser from '@/components/follow-user'
+import CollectArticle from '@/components/collect-article'
+import LikeArticle from '@/components/like-article'
 
 export default {
   name: 'ArticleIndex',
-  components: {},
+  components: {
+    FollowUser,
+    CollectArticle,
+    LikeArticle
+  },
   props: {
     articleId: {
       type: [Number, String],
@@ -120,7 +143,8 @@ export default {
     return {
       article: {}, // 文章详情
       loading: true, // 加载中的loading状态
-      errStatus: 0 // 失败的状态码
+      errStatus: 0, // 失败的状态码
+      followLoading: false
     }
   },
   computed: {},
@@ -213,9 +237,10 @@ export default {
         font-size: 23px;
         color: #b7b7b7;
       }
-      .follow-btn {
+      /deep/ .follow-btn {
+        margin-right: -80px;
         width: 170px;
-        height: 58px;
+        height: 62px;
       }
     }
 
@@ -281,7 +306,7 @@ export default {
       line-height: 46px;
       color: #a7a7a7;
     }
-    .van-icon {
+    /deep/ .van-icon {
       font-size: 40px;
       .van-info {
         font-size: 16px;
