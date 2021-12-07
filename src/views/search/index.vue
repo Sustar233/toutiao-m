@@ -47,12 +47,19 @@ export default {
   data() {
     return {
       searchText: '',
-      isResultShow: false // 控制搜索结果的展示
+      isResultShow: false, // 控制搜索结果的展示
+      searchHistories: [] // 搜索历史数据
     }
   },
   methods: {
     onSearch(val) {
+      // 把输入框设置为要搜索的文本
       this.searchText = val
+      
+      // 记录搜索历史记录
+      this.searchHistories.push(searchText)
+
+      // 展示搜索结果
       this.isResultShow = true
     },
     onCancel() {
