@@ -27,7 +27,10 @@
     />
 
     <!-- 搜索历史记录 -->
-    <search-history v-else />
+    <search-history 
+      v-else
+      :search-histories="searchHistories"
+    />
 
   </div>
 </template>
@@ -36,6 +39,7 @@
 import SearchHistory from './components/search-history'
 import SearchSuggestion from './components/search-suggestion'
 import SearchResult from './components/search-result'
+import { setItem, getItem } from '@/utils/storage'
 
 export default {
   name: 'SearchIndex',
@@ -48,7 +52,7 @@ export default {
     return {
       searchText: '',
       isResultShow: false, // 控制搜索结果的展示
-      searchHistories: [] // 搜索历史数据
+      searchHistories: getItem('search-histories') || [] // 搜索历史数据
     }
   },
   methods: {
@@ -56,8 +60,17 @@ export default {
       // 把输入框设置为要搜索的文本
       this.searchText = val
       
+      const index = this.searchHistories.indexOf(val)
+      if (index !== -1) {
+        // 把重复项删除
+        this.searchHistories.splice(index, 1)
+      }
+
       // 记录搜索历史记录
-      this.searchHistories.push(searchText)
+      this.searchHistories.unshift(val)
+
+      // 把搜索历史记录存储到线上
+      setItem('search-histories', this.searchHistories)
 
       // 展示搜索结果
       this.isResultShow = true
